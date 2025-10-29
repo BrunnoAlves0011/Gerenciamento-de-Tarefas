@@ -1,0 +1,18 @@
+==================================
+      INSTRUÇÕES DE USO
+==================================
+1. **Adicionar Tarefa:**
+   - Preencha o campo "Título" com o nome da sua tarefa.
+   - Preencha o campo "Descrição" com mais detalhes sobre a tarefa.
+   - Clique em "Adicionar" para salvar a tarefa.
+
+2. **Concluir Tarefa:**
+   - Clique em "Concluir" ao lado da tarefa para marcá-la como finalizada.
+   - O status da tarefa será alterado para "Concluída".
+
+3. **Desmarcar Tarefa:**
+   - Caso deseje reverter a conclusão de uma tarefa, clique em "Desmarcar" para torná-la novamente "Pendente".
+
+4. **Excluir Tarefa:**
+   - Se você deseja excluir uma tarefa, clique em "Deletar" ao lado da tarefa.
+   - Será solicitado que você confirme a exclusão.

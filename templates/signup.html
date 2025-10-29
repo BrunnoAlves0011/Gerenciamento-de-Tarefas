@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="/static/css/signup.css">
+    <script src="/static/js/toast.js"></script>
+    <script src="/static/js/script_signup.js"></script>
+</head>
+
+<body>
+    <div id="toast-container"></div>
+    <div class="cadastro-container">
+        <div class="icon"></div>
+        <h1>Cadastro</h1>
+        <form action="/cadastro" id="cadastrof" method="post">
+            <div class="form-group">
+                <label for="name">Nome:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="usuario">Usuario:</label>
+                <input type="text" id="usuario" name="usuario" required>
+            </div>
+
+            <div class="form-group">
+                <label for="senha">Senha:</label>
+                <input type="password" name="senha" id="senha" required>
+            </div>
+
+            <div class="form-group">
+                <label for="conf_senha">Confirme a Senha:</label>
+                <input type="password" name="conf_senha" id="conf_senha" required>
+            </div>
+
+            <input type="submit" value="CADASTRAR" />
+        </form>
+
+        <div class="login-link">
+            <a href="/login">Já tem uma conta? Faça login</a>
+        </div>
+    </div>
+    <script>
+        {% if error %}
+        showToast("{{ error }}", 5000);
+        {% endif %}
+
+        {% if success %}
+        showToast("{{ success }}", 5000);
+        {% endif %}
+    </script>
+</body>
+
+</html>

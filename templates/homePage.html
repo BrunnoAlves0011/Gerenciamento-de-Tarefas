@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Tarefas</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/toast.js"></script>
+    <script src="/static/js/script_home.js"></script>
+</head>
+
+<body>
+    <main>
+        <div id="top">
+            <button class="logout-btn" onclick="logout()">Sair</button>
+            <h3>{{ user }}</h1>
+        </div>
+        <h1>Gerenciador de Tarefas</h1>
+        <section>
+            <h2>Adicionar Nova Tarefa</h2>
+            <form action="/adicionar" method="post">
+                <input type="text" name="titulo" placeholder="Título da tarefa" required>
+                <textarea name="descricao" placeholder="Descrição da tarefa" rows="4" required></textarea>
+                <button type="submit">Adicionar</button>
+            </form>
+        </section>
+
+        <section>
+            <h2>Lista de Tarefas</h2>
+            <table border="1" cellpadding="8" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Descrição</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tarefa in tarefas %}
+                    <tr>
+                        <td>{{ tarefa.titulo }}</td>
+                        <td style="white-space: pre-wrap;">{{ tarefa.descricao }}</td>
+                        <td>{{ "Concluída" if tarefa.concluido else "Pendente" }}</td>
+                        <td>
+                            <a href="/concluir/{{ tarefa.id }}">
+                                {{ "Desmarcar" if tarefa.concluido else "Concluir" }}
+                            </a> |
+                            <a href="/deletar/{{ tarefa.id }}"
+                                onclick="return confirm('Deseja realmente excluir esta tarefa?');">
+                                Deletar
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+
+</html>

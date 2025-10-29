@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Gerenciador de Tarefas</title>
+    <link rel="stylesheet" href="/static/css/home.css">
+    <script src="/static/js/toast.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="user-info">
+                <div class="avatar">{{ user[0:2] | upper }}</div>
+                <div>
+                    <h1>Olá, {{ user }}! 👋</h1>
+                    <p class="welcome-text">{{ data_atual | capitalize }}</p>
+                </div>
+            </div>
+            <div class="quick-actions">
+                <button class="btn btn-primary" onclick="createTask()">
+                    ➕ Nova Tarefa
+                </button>
+                <button class="btn btn-secondary" onclick="viewAllTasks()">
+                    📋 Ver Todas
+                </button>
+                <button class="btn btn-primary" onclick="logout()">
+                    Sair
+                </button>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Tarefas de Hoje -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📅 Tarefas de Hoje</h2>
+                    <span class="badge">5 tarefas</span>
+                </div>
+                <ul class="task-list">
+                    <li class="task-item urgent">
+                        <div class="task-title">Revisar proposta de projeto</div>
+                        <div class="task-meta">
+                            <span>⏰ 10:00</span>
+                            <span>🔴 Urgente</span>
+                        </div>
+                    </li>
+                    <li class="task-item completed">
+                        <div class="task-title">Reunião com equipe</div>
+                        <div class="task-meta">
+                            <span>⏰ 09:00</span>
+                            <span>✅ Concluída</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <div class="task-title">Atualizar documentação</div>
+                        <div class="task-meta">
+                            <span>⏰ 14:00</span>
+                            <span>📝 Em andamento</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <div class="task-title">Responder e-mails importantes</div>
+                        <div class="task-meta">
+                            <span>⏰ 16:00</span>
+                            <span>📧 Pendente</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <div class="task-title">Preparar apresentação</div>
+                        <div class="task-meta">
+                            <span>⏰ 17:30</span>
+                            <span>📊 Pendente</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Tarefas da Semana -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📆 Esta Semana</h2>
+                    <span class="badge">12 tarefas</span>
+                </div>
+                <ul class="task-list">
+                    <li class="task-item">
+                        <div class="task-title">Desenvolver nova funcionalidade</div>
+                        <div class="task-meta">
+                            <span>📅 Qui</span>
+                            <span>💻 Desenvolvimento</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <div class="task-title">Code review do time</div>
+                        <div class="task-meta">
+                            <span>📅 Qui</span>
+                            <span>👥 Equipe</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <div class="task-title">Planejamento sprint</div>
+                        <div class="task-meta">
+                            <span>📅 Sex</span>
+                            <span>🎯 Planejamento</span>
+                        </div>
+                    </li>
+                    <li class="task-item urgent">
+                        <div class="task-title">Entrega do relatório mensal</div>
+                        <div class="task-meta">
+                            <span>📅 Sex</span>
+                            <span>🔴 Urgente</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Progresso Geral -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📊 Progresso Geral</h2>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">{{ tarefas|length }}</div>
+                        <div class="stat-label">TOTAL</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{ tarefas | selectattr('concluido', 'equalto', False) | list | length }}</div>
+                        <div class="stat-label">PENDENTES</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{ tarefas | selectattr('concluido', 'equalto', True) | list | length }}</div>
+                        <div class="stat-label">CONCLUÍDAS</div>
+                    </div>
+                </div>
+                <div class="progress-section">
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span><strong>Trabalho</strong></span>
+                            <span>{{ ((tarefas | selectattr('categoria.value', 'equalto', 'Trabalho') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ ((tarefas | selectattr('categoria.value', 'equalto', 'Trabalho') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span><strong>Pessoal</strong></span>
+                            <span>{{ ((tarefas | selectattr('categoria.value', 'equalto', 'Pessoal') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ ((tarefas | selectattr('categoria.value', 'equalto', 'Pessoal') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span><strong>Estudos</strong></span>
+                            <span>{{ ((tarefas | selectattr('categoria.value', 'equalto', 'Estudos') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ ((tarefas | selectattr('categoria.value', 'equalto', 'Estudos') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span><strong>Outros</strong></span>
+                            <span>{{ ((tarefas | selectattr('categoria.value', 'equalto', '') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ ((tarefas | selectattr('categoria.value', 'equalto', '') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function logout() {
+            try {
+                const response = await fetch('/logout', {
+                    method: 'GET'
+                });
+
+                if (response.ok) {
+                    console.log('Logout realizado com sucesso!');
+                    window.location.reload();
+                } else {
+                    console.error('Erro ao fazer logout:', response.status);
+                    alert('Erro ao fazer logout. Tente novamente.');
+                }
+            } catch (error) {
+                console.error('Erro na requisição:', error);
+                alert('Erro de conexão. Verifique sua internet.');
+            }
+        }
+
+        function createTask() {
+            window.location.href = '/home/adicionar_tarefa';
+        }
+
+        function viewAllTasks() {
+            window.location.href = '/home/tarefas_lista';
+        }
+
+        // Adicionar interatividade aos itens de tarefa
+        document.querySelectorAll('.task-item').forEach(item => {
+            item.addEventListener('click', function () {
+                if (!this.classList.contains('completed')) {
+                    const confirm = window.confirm('Marcar tarefa como concluída?');
+                    if (confirm) {
+                        this.classList.add('completed');
+                    }
+                }
+            });
+        });
+
+        // Animação das barras de progresso ao carregar
+        window.addEventListener('load', function () {
+            document.querySelectorAll('.progress-fill').forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 100);
+            });
+        });
+    </script>
+</body>
+
+</html>

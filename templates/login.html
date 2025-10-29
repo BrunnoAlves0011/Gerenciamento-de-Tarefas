@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/css/signin.css">
+    <script src="/static/js/toast.js"></script>
+    <script src="/static/js/script_signin.js"></script>
+</head>
+
+<body>
+    <div id="toast-container"></div>
+    <div class="login-container">
+        <div class="icon"></div>
+        <h1>Login</h1>
+        <form action="/login" method="post">
+            <div class="form-group">
+                <label for="usuario">Nome Usuario:</label>
+                <input type="text" id="usuario" name="usuario" required>
+            </div>
+
+            <div class="form-group">
+                <label for="senha">Senha:</label>
+                <input type="password" name="senha" id="senha" required>
+            </div>
+
+            <input type="submit" value="LOGIN" />
+        </form>
+        <div class="cadastro-link">
+            <a href="/cadastro">Não tem uma conta? Cadastre-se aqui</a>
+        </div>
+    </div>
+    <script>
+        {% if error %}
+        showToast("{{ error }}", 5000);
+        {% endif %}
+
+        {% if success %}
+        showToast("{{ success }}", 5000);
+        {% endif %}
+    </script>
+</body>
+
+</html>
