@@ -1,0 +1,53 @@
+# ---- Arquivos e pastas do Python ----
+__pycache__/
+*.pyc
+
+# ---- Ambiente virtual ----
+venv/
+.env/
+env/
+.venv/
+ENV/
+
+# ---- Arquivos de configuração e IDEs ----
+*.log
+*.sqlite3
+*.db
+.DS_Store
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# ---- Arquivos temporários ----
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# ---- Testes e relatórios ----
+.coverage
+htmlcov/
+.cache/
+nosetests.xml
+coverage.xml
+pytest_cache/
+
+# ---- Configurações do sistema e container ----
+*.env
+*.ini
+*.cfg
+*.local
+docker-compose.override.yml
+
+# ---- Node.js (caso use frontend junto) ----
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ---- Arquivos do FastAPI ou outros frameworks ----
+instance/
+uploads/
+media/
+staticfiles/
