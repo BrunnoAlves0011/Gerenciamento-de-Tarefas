@@ -116,7 +116,10 @@ async function completeTask(button) {
 }
 
 function editTask(button) {
-    alert('Abrindo formulário para editar tarefa...');
+    const taskCard = button.closest('.task-card');
+    const taskId = taskCard.dataset.taskId;
+
+    window.location.href = `/home/edit/${taskId}`;
 }
 
 async function deleteTask(button) {
@@ -153,15 +156,12 @@ async function deleteTask(button) {
     }
 }
 
-// Atalhos de teclado
 document.addEventListener('keydown', function (e) {
-    // Ctrl/Cmd + K para focar na busca
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
         document.getElementById('searchInput').focus();
     }
 
-    // Ctrl/Cmd + N para nova tarefa
     if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
         e.preventDefault();
         createTask();

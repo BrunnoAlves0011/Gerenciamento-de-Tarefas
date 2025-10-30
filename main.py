@@ -246,7 +246,33 @@ def concluir_tarefa(request: Request, tarefa_id: int, db: Session = Depends(get_
     db.commit()
     db.refresh(tarefa)
 
+@app.get("/home/edit/{tarefa_id}")
+def edit_tarefap(request: Request, tarefa_id: int, db: Session = Depends(get_db)):
+    user = request.session.get("username")
+    tarefa = db.query(Tarefas).filter(
+        Tarefas.id == tarefa_id,
+        Tarefas.user == user
+    ).first()
 
+    return templates.TemplateResponse("tarefas_editar.html", {
+        "request": request,
+        "tarefa": tarefa,
+        "taskId" : tarefa_id
+    })
+
+@app.patch("/home/tarefa/edit/{tarefa_id}")
+async def edit_tarefaf(request: Request, tarefa_id: int, db: Session = Depends(get_db)):
+    raw = await request.body()
+    user = request.session.get("username")
+
+    db.query(Tarefas).filter(
+        Tarefas.id == tarefa_id,
+        Tarefas.user == user
+    ).update(raw)
+
+    db.commit()
+
+    return HTTPException(status_code=303)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)
