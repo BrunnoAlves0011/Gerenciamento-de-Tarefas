@@ -5,62 +5,62 @@ function goBack() {
 }
 
 function createTask() {
-    alert('Abrindo formulário para criar nova tarefa...');
+    window.location.href = '/home/adicionar_tarefa';
 }
 
-function filterTasks(filter) {
-    currentFilter = filter;
+// function filterTasks(filter) {
+//     currentFilter = filter;
 
-    // Atualizar botões ativos
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    event.target.classList.add('active');
+//     // Atualizar botões ativos
+//     document.querySelectorAll('.filter-btn').forEach(btn => {
+//         btn.classList.remove('active');
+//     });
+//     event.target.classList.add('active');
 
-    applyFilters();
-}
+//     applyFilters();
+// }
 
-function applyFilters() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const priority = document.getElementById('priorityFilter').value;
-    const category = document.getElementById('categoryFilter').value;
-    const tasks = document.querySelectorAll('.task-card');
+// function applyFilters() {
+//     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+//     const priority = document.getElementById('priorityFilter').value;
+//     const category = document.getElementById('categoryFilter').value;
+//     const tasks = document.querySelectorAll('.task-card');
 
-    tasks.forEach(task => {
-        const status = task.dataset.status;
-        const taskPriority = task.dataset.priority;
-        const taskCategory = task.dataset.category;
-        const title = task.querySelector('.task-title').textContent.toLowerCase();
-        const description = task.querySelector('.task-description').textContent.toLowerCase();
+//     tasks.forEach(task => {
+//         const status = task.dataset.status;
+//         const taskPriority = task.dataset.priority;
+//         const taskCategory = task.dataset.category;
+//         const title = task.querySelector('.task-title').textContent.toLowerCase();
+//         const description = task.querySelector('.task-description').textContent.toLowerCase();
 
-        let show = true;
+//         let show = true;
 
-        // Filtro de status
-        if (currentFilter !== 'all') {
-            if (currentFilter === 'completed' && status !== 'completed') show = false;
-            if (currentFilter === 'pending' && status !== 'pending') show = false;
-        }
+//         // Filtro de status
+//         if (currentFilter !== 'all') {
+//             if (currentFilter === 'completed' && status !== 'completed') show = false;
+//             if (currentFilter === 'pending' && status !== 'pending') show = false;
+//         }
 
-        // Filtro de prioridade
-        if (priority && taskPriority !== priority) show = false;
+//         // Filtro de prioridade
+//         if (priority && taskPriority !== priority) show = false;
 
-        // Filtro de categoria
-        if (category && taskCategory !== category) show = false;
+//         // Filtro de categoria
+//         if (category && taskCategory !== category) show = false;
 
-        // Filtro de busca
-        if (searchTerm && !title.includes(searchTerm) && !description.includes(searchTerm)) {
-            show = false;
-        }
+//         // Filtro de busca
+//         if (searchTerm && !title.includes(searchTerm) && !description.includes(searchTerm)) {
+//             show = false;
+//         }
 
-        task.style.display = show ? 'block' : 'none';
-    });
+//         task.style.display = show ? 'block' : 'none';
+//     });
 
-    checkEmptyState();
-}
+//     checkEmptyState();
+// }
 
-function searchTasks() {
-    applyFilters();
-}
+// function searchTasks() {
+//     applyFilters();
+// }
 
 function checkEmptyState() {
     const visibleTasks = document.querySelectorAll('.task-card[style="display: block;"], .task-card:not([style*="display: none"])');

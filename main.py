@@ -143,6 +143,20 @@ def logout(request: Request):
 
 
 
+# Tela Sobre
+@app.get("/sobre")
+def sobre(request: Request):
+    return templates.TemplateResponse("sobre.html", {"request": request})
+
+
+
+# Tela Ajuda
+@app.get("/home/ajuda")
+def ajuda(request: Request):
+    return templates.TemplateResponse("ajuda.html", {"request": request})
+
+
+
 # Tela Lista Tarefas
 @app.get("/home/tarefas_lista")
 def tarefas_lista(request: Request, db: Session = Depends(get_db)):

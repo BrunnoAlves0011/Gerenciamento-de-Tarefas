@@ -26,34 +26,6 @@
                     </button>
                 </div>
             </div>
-
-            <div class="filters-bar">
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Buscar tarefas..." onkeyup="searchTasks()">
-                    <span class="search-icon">🔍</span>
-                </div>
-
-                <div class="filter-group">
-                    <button class="filter-btn active" onclick="filterTasks('all')">Todas</button>
-                    <button class="filter-btn" onclick="filterTasks('pending')">Pendentes</button>
-                    <button class="filter-btn" onclick="filterTasks('completed')">Concluídas</button>
-                </div>
-
-                <select id="priorityFilter" onchange="applyFilters()">
-                    <option value="">Prioridade</option>
-                    <option value="high">Alta</option>
-                    <option value="medium">Média</option>
-                    <option value="low">Baixa</option>
-                </select>
-
-                <select id="categoryFilter" onchange="applyFilters()">
-                    <option value="">Categoria</option>
-                    <option value="trabalho">Trabalho</option>
-                    <option value="pessoal">Pessoal</option>
-                    <option value="estudos">Estudos</option>
-                    <option value="saude">Saúde</option>
-                </select>
-            </div>
         </header>
 
         <div class="content-area">

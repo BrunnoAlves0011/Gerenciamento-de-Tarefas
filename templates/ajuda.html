@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajuda - Gerenciador de Tarefas</title>
+    <link rel="stylesheet" href="/static/css/ajuda.css">
+</head>
+<body>
+    <div class="container">
+        <a href="/home" class="back-button">
+            ← Voltar ao Dashboard
+        </a>
+
+        <div class="help-container">
+            <div class="header">
+                <h1>❓ Central de Ajuda</h1>
+                <p>Encontre respostas e aprenda a usar o sistema</p>
+            </div>
+
+            <div class="search-section">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Buscar ajuda..." onkeyup="searchHelp()">
+                    <span class="search-icon">🔍</span>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="quick-links">
+                    <div class="quick-link-card" onclick="scrollToSection('getting-started')">
+                        <div class="quick-link-icon">🚀</div>
+                        <div class="quick-link-title">Primeiros Passos</div>
+                        <div class="quick-link-desc">Aprenda a criar sua primeira tarefa</div>
+                    </div>
+
+                    <div class="quick-link-card" onclick="scrollToSection('faq')">
+                        <div class="quick-link-icon">💡</div>
+                        <div class="quick-link-title">Perguntas Frequentes</div>
+                        <div class="quick-link-desc">Dúvidas mais comuns dos usuários</div>
+                    </div>
+
+                    <div class="quick-link-card" onclick="scrollToSection('tips')">
+                        <div class="quick-link-icon">⚡</div>
+                        <div class="quick-link-title">Dicas e Truques</div>
+                        <div class="quick-link-desc">Aproveite melhor o sistema</div>
+                    </div>
+
+                </div>
+
+                <div class="section" id="getting-started">
+                    <h2 class="section-title">🚀 Primeiros Passos</h2>
+                    <div class="tutorial-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Criar uma Nova Tarefa</h3>
+                                <p>No dashboard, clique no botão "Nova Tarefa". Preencha o título, descrição, escolha a prioridade (Urgente, Alta, Média ou Baixa) e a categoria (Trabalho, Pessoal, Estudos ou Saúde). Você também pode definir uma data de vencimento opcional.</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Organizar suas Tarefas</h3>
+                                <p>Use as categorias e prioridades para organizar suas tarefas. No painel "Ver Todas", você pode filtrar por status (Pendentes/Concluídas), prioridade e categoria. Use a barra de busca para encontrar tarefas específicas rapidamente.</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>Marcar como Concluída</h3>
+                                <p>Quando terminar uma tarefa, clique no botão ✓ (check) ao lado dela. A tarefa será marcada como concluída e você poderá acompanhar seu progresso nas estatísticas do dashboard.</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h3>Acompanhar seu Progresso</h3>
+                                <p>No dashboard, visualize suas estatísticas: total de tarefas, concluídas, pendentes e urgentes. As barras de progresso mostram o percentual de conclusão por projeto ou categoria.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" id="faq">
+                    <h2 class="section-title">💡 Perguntas Frequentes</h2>
+                    <div class="faq-container">
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFaq(this)">
+                                Como alterar minha senha?
+                                <span class="faq-icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Atualmente, para alterar sua senha, entre em contato com o suporte através do email de contato. Em breve teremos uma funcionalidade de alteração de senha diretamente no perfil do usuário.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFaq(this)">
+                                Posso excluir uma tarefa concluída?
+                                <span class="faq-icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Sim! Você pode excluir qualquer tarefa, concluída ou não. Na lista de tarefas, clique no ícone de lixeira (🗑️) ao lado da tarefa que deseja remover. Uma confirmação será solicitada antes da exclusão.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFaq(this)">
+                                Como funcionam as prioridades?
+                                <span class="faq-icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <p>As prioridades ajudam você a organizar suas tarefas por importância: <strong>Urgente</strong> (vermelho) para tarefas críticas, <strong>Alta</strong> (laranja) para importantes, <strong>Média</strong> (azul) para normais, e <strong>Baixa</strong> (verde) para tarefas menos urgentes. Tarefas urgentes aparecem destacadas no topo da lista.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFaq(this)">
+                                Posso editar uma tarefa depois de criada?
+                                <span class="faq-icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Sim! Clique no ícone de lápis (✏️) ao lado da tarefa para editar qualquer informação: título, descrição, data, prioridade ou categoria.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFaq(this)">
+                                Existe limite de tarefas que posso criar?
+                                <span class="faq-icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Não há limite! Você pode criar quantas tarefas precisar para organizar sua rotina, projetos e compromissos.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFaq(this)">
+                                Como funcionam as categorias?
+                                <span class="faq-icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <p>As categorias ajudam a organizar tarefas por contexto: <strong>Trabalho</strong> (💼) para atividades profissionais, <strong>Pessoal</strong> (👤) para vida pessoal, <strong>Estudos</strong> (📚) para aprendizado, e <strong>Saúde</strong> (❤️) para bem-estar e exercícios.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFaq(this)">
+                                Posso reabrir uma tarefa concluída?
+                                <span class="faq-icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Sim! Se você marcou uma tarefa como concluída por engano, pode clicar novamente no botão ✓ para reabri-la e voltar ao status pendente.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFaq(this)">
+                                Meus dados estão seguros?
+                                <span class="faq-icon">▼</span>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Sim! O sistema utiliza autenticação segura com sessões e suas senhas são criptografadas. Apenas você tem acesso às suas tarefas e informações pessoais.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" id="tips">
+                    <h2 class="section-title">⚡ Dicas e Truques</h2>
+                    <div class="tips-grid">
+                        <div class="tip-card">
+                            <div class="tip-icon">🎯</div>
+                            <div class="tip-title">Use Prioridades Corretamente</div>
+                            <div class="tip-text">Não marque tudo como urgente! Reserve prioridade alta/urgente apenas para tarefas realmente críticas. Isso mantém seu foco no que realmente importa.</div>
+                        </div>
+
+                        <div class="tip-card">
+                            <div class="tip-icon">📅</div>
+                            <div class="tip-title">Defina Datas Realistas</div>
+                            <div class="tip-text">Ao adicionar datas de vencimento, seja realista. Datas bem definidas ajudam a manter o compromisso e evitar procrastinação.</div>
+                        </div>
+
+                        <div class="tip-card">
+                            <div class="tip-icon">✍️</div>
+                            <div class="tip-title">Seja Específico na Descrição</div>
+                            <div class="tip-text">Quanto mais detalhada a descrição, mais fácil será retomar a tarefa depois. Inclua links, detalhes e contextos importantes.</div>
+                        </div>
+
+                        <div class="tip-card">
+                            <div class="tip-icon">🔍</div>
+                            <div class="tip-title">Use Filtros e Busca</div>
+                            <div class="tip-text">Aproveite os filtros por categoria e prioridade para focar em contextos específicos (ex: ver apenas tarefas de Trabalho).</div>
+                        </div>
+
+                        <div class="tip-card">
+                            <div class="tip-icon">📊</div>
+                            <div class="tip-title">Acompanhe suas Estatísticas</div>
+                            <div class="tip-text">Revise regularmente o dashboard para ver seu progresso. Isso motiva e ajuda a identificar áreas que precisam de mais atenção.</div>
+                        </div>
+
+                        <div class="tip-card">
+                            <div class="tip-icon">🗂️</div>
+                            <div class="tip-title">Revise e Limpe</div>
+                            <div class="tip-text">Periodicamente, revise suas tarefas concluídas e exclua as que não são mais relevantes. Mantenha o sistema organizado!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleFaq(element) {
+            const faqItem = element.parentElement;
+            const isActive = faqItem.classList.contains('active');
+            
+            // Fechar todos os outros
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Abrir o clicado se não estava aberto
+            if (!isActive) {
+                faqItem.classList.add('active');
+            }
+        }
+
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function searchHelp() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const faqItems = document.querySelectorAll('.faq-item');
+            const steps = document.querySelectorAll('.step');
+            const tips = document.querySelectorAll('.tip-card');
+
+            let found = false;
+
+            // Buscar em FAQs
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question').textContent.toLowerCase();
+                const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+                
+                if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                    item.style.display = 'block';
+                    if (searchTerm.length > 0) {
+                        item.classList.add('active');
+                    }
+                    found = true;
+                } else {
+                    item.style.display = searchTerm.length > 0 ? 'none' : 'block';
+                    item.classList.remove('active');
+                }
+            });
+
+            // Buscar em Steps
+            steps.forEach(step => {
+                const content = step.textContent.toLowerCase();
+                if (content.includes(searchTerm) || searchTerm.length === 0) {
+                    step.style.display = 'flex';
+                } else {
+                    step.style.display = 'none';
+                }
+            });
+
+            // Buscar em Tips
+            tips.forEach(tip => {
+                const content = tip.textContent.toLowerCase();
+                if (content.includes(searchTerm) || searchTerm.length === 0) {
+                    tip.style.display = 'block';
+                } else {
+                    tip.style.display = 'none';
+                }
+            });
+        }
+
+        // Atalho de teclado para busca
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+        });
+    </script>
+</body>
+</html>

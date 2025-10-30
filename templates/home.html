@@ -20,6 +20,9 @@
                 </div>
             </div>
             <div class="quick-actions">
+                <button class="btn btn-secondary" onclick="viewHelp()">
+                    💡 Ajuda
+                </button>
                 <button class="btn btn-primary" onclick="createTask()">
                     ➕ Nova Tarefa
                 </button>
@@ -206,6 +209,10 @@
 
         function viewAllTasks() {
             window.location.href = '/home/tarefas_lista';
+        }
+
+        function viewHelp() {
+            window.location.href = '/home/ajuda';
         }
 
         // Adicionar interatividade aos itens de tarefa
