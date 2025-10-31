@@ -190,22 +190,24 @@ def tarefas_lista(request: Request, db: Session = Depends(get_db)):
 @app.get("/home/perfil", response_class=HTMLResponse)
 def perfil(request: Request, db: Session = Depends(get_db)):
     user = request.session.get("username")
-    profile = db.query(Users).filter_by(username=user).first()
+    profile = db.query(Perfil).filter_by(username=user).first()
     tarefas = db.query(Tarefas).filter_by(user=user).all()
 
     total = len(tarefas)
     concluidas = 0
     andamento = 0
-    taxa = 1
+    taxa = 0
 
     for x in tarefas:
         if x.concluido == True:
             concluidas += 1
         else:
             andamento += 1
-
-    taxa = (concluidas/total) * 100
-    taxa = round(taxa, 2)
+    if concluidas == 0:
+        concluidas = 0
+    else:
+        taxa = (concluidas/total) * 100
+        taxa = round(taxa, 2)
 
     stats = {   
         "total":  total,
@@ -219,6 +221,26 @@ def perfil(request: Request, db: Session = Depends(get_db)):
         "profile"  : profile,
         "stats"    : stats
     })
+
+
+
+# Ação Del Conta
+@app.delete("/perfil/excluir-conta/{user}")
+def deletar_conta(request: Request, user: str, db: Session = Depends(get_db)):
+    perfil = db.query(Perfil).filter_by(username=user).delete()
+
+    users = db.query(Users).filter_by(username=user).delete()
+
+    if not perfil:
+        raise HTTPException(status_code=404, detail="Perfil não encontrado")
+    
+    tarefas = db.query(Tarefas).filter_by(user=user).delete()
+
+    db.commit()
+
+    request.session.clear()
+
+    return {"message": "Tarefa excluída com sucesso"}
 
 
 
