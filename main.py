@@ -3,7 +3,7 @@ from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from banco import SessionLocal, engine
-from modelo import Tarefas, Users, Base
+from modelo import Tarefas, Users, Perfil, Base
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 from starlette.middleware.sessions import SessionMiddleware
@@ -93,9 +93,10 @@ def validar(request: Request, usuario: str = Form(...), senha: str = Form(...), 
     user = db.query(Users).filter_by(username=usuario, senha=senha).first()
     if user:
         print('Logado com sucesso')
+        perfil = db.query(Perfil).filter_by(username = user.username).first()
         request.session["logged_in"] = True
         request.session["username"] = user.username
-        request.session["user"] = user.nome
+        request.session["user"] = perfil.nome
         return RedirectResponse(url='/home', status_code=303)
     else:
         print('Erro ao entrar')
@@ -123,11 +124,18 @@ def cadastro(request: Request, error: str = None, success: str = None):
         })
 
 @app.post("/cadastro", response_class=HTMLResponse)
-def validar(request: Request, name: str = Form(...), usuario: str = Form(...), senha: str = Form(...), db: Session = Depends(get_db)):
+def validar(request: Request, name: str = Form(...), usuario: str = Form(...), email: str = Form(...), senha: str = Form(...), db: Session = Depends(get_db)):
     user_existed = db.query(Users).filter(Users.username == usuario).first()
-    if not user_existed:
-        novo_usuario = Users(nome=name, username=usuario, senha=senha)
+    profile_existed = db.query(Perfil).filter(Perfil.username == usuario).first()
+
+    data = datetime.now().strftime("%Y-%m-%d")
+    data_obj = datetime.strptime(data, "%Y-%m-%d").date()
+
+    if not user_existed and not profile_existed:
+        novo_usuario = Users(username=usuario, senha=senha)
+        novo_perfil = Perfil(nome=name, username=usuario, email=email, created_at=data_obj)
         db.add(novo_usuario)
+        db.add(novo_perfil)
         db.commit()
         return RedirectResponse(url="/login", status_code=303)
     else:
@@ -175,6 +183,43 @@ def tarefas_lista(request: Request, db: Session = Depends(get_db)):
         "request": request, 
         "tarefas": tarefas
         })
+
+
+
+# Tela Perfil
+@app.get("/home/perfil", response_class=HTMLResponse)
+def perfil(request: Request, db: Session = Depends(get_db)):
+    user = request.session.get("username")
+    profile = db.query(Users).filter_by(username=user).first()
+    tarefas = db.query(Tarefas).filter_by(user=user).all()
+
+    total = len(tarefas)
+    concluidas = 0
+    andamento = 0
+    taxa = 1
+
+    for x in tarefas:
+        if x.concluido == True:
+            concluidas += 1
+        else:
+            andamento += 1
+
+    taxa = (concluidas/total) * 100
+    taxa = round(taxa, 2)
+
+    stats = {   
+        "total":  total,
+        "concluida": concluidas,
+        "andamento": andamento,
+        "taxa": taxa
+    }
+
+    return templates.TemplateResponse("perfil.html", {
+        "request"  : request,
+        "profile"  : profile,
+        "stats"    : stats
+    })
+
 
 
 # Açoes Tarefas
@@ -229,6 +274,7 @@ def deletar_tarefa(
     
     return {"message": "Tarefa excluída com sucesso"}
 
+
 @app.patch("/home/tarefa/finish/{tarefa_id}")
 def concluir_tarefa(request: Request, tarefa_id: int, db: Session = Depends(get_db)):
     user = request.session.get("username")
@@ -246,6 +292,7 @@ def concluir_tarefa(request: Request, tarefa_id: int, db: Session = Depends(get_
     db.commit()
     db.refresh(tarefa)
 
+
 @app.get("/home/edit/{tarefa_id}")
 def edit_tarefap(request: Request, tarefa_id: int, db: Session = Depends(get_db)):
     user = request.session.get("username")
@@ -260,6 +307,7 @@ def edit_tarefap(request: Request, tarefa_id: int, db: Session = Depends(get_db)
         "taskId" : tarefa_id
     })
 
+
 @app.patch("/home/tarefa/edit/{tarefa_id}")
 async def edit_tarefaf(request: Request, tarefa_id: int, db: Session = Depends(get_db)):
     raw = await request.body()
@@ -273,6 +321,8 @@ async def edit_tarefaf(request: Request, tarefa_id: int, db: Session = Depends(g
     db.commit()
 
     return HTTPException(status_code=303)
+
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)

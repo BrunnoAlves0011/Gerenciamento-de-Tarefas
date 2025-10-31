@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - Gerenciador de Tarefas</title>
+    <link rel="stylesheet" href="/static/css/perfil.css">
+    <script src="/static/js/toast.js"></script>
+    <script src="/static/js/script_perfil.js"></script>
+</head>
+<body>
+    <div class="container">
+        <a href="/home" class="back-button">
+            ← Voltar ao Dashboard
+        </a>
+
+        <div class="profile-container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="profile-card">
+                    <div class="avatar-container">
+                        <div class="avatar">{{ profile.username[0].upper() if profile else 'U' }}</div>
+                        <div class="avatar-edit" title="Editar foto">
+                            📷
+                        </div>
+                    </div>
+                    <h2 class="user-name">{{ profile.username if profile else 'Usuário' }}</h2>
+                    <p class="user-email">{{ usuario.email if usuario else 'email@exemplo.com' }}</p>
+                    <p class="user-since">Membro desde {{ usuario.created_at.strftime('%B %Y') if usuario and usuario.created_at else 'Janeiro 2025' }}</p>
+                </div>
+
+                <div class="stats-card">
+                    <h3 class="stats-title">📊 Suas Estatísticas</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Total de Tarefas</span>
+                        <span class="stat-value">{{ stats["total"] if stats else 0 }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Concluídas</span>
+                        <span class="stat-value">{{ stats["concluida"] if stats else 0 }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Em Andamento</span>
+                        <span class="stat-value">{{ stats["andamento"] if stats else 0 }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Taxa de Conclusão</span>
+                        <span class="stat-value">{{ stats["taxa"] if stats else 0 }}%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Informações Pessoais -->
+                <div class="content-card">
+                    <h2 class="card-title">👤 Informações Pessoais</h2>
+                    
+                    <div class="success-message" id="successMessage"></div>
+                    <div class="error-message" id="errorMessage"></div>
+
+                    <form id="profileForm">
+                        <div class="form-group">
+                            <label>Nome de Usuário</label>
+                            <input type="text" id="username" value="{{ profile.username if profile else '' }}" disabled>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="email" value="{{ usuario.email if usuario else '' }}" placeholder="seu@email.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Nome Completo</label>
+                            <input type="text" id="fullname" value="{{ profile.nome if profile else '' }}" placeholder="Seu nome completo">
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                💾 Salvar Alterações
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                🔄 Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Alterar Senha -->
+                <div class="content-card">
+                    <h2 class="card-title">🔒 Alterar Senha</h2>
+                    
+                    <form id="passwordForm">
+                        <div class="form-group">
+                            <label>Senha Atual</label>
+                            <input type="password" id="currentPassword" placeholder="Digite sua senha atual" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Nova Senha</label>
+                            <input type="password" id="newPassword" placeholder="Digite a nova senha" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Confirmar Nova Senha</label>
+                            <input type="password" id="confirmPassword" placeholder="Confirme a nova senha" required>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                🔐 Atualizar Senha
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Conquistas -->
+                <div class="content-card">
+                    <h2 class="card-title">🏆 Conquistas</h2>
+                    
+                    <div class="achievements-grid">
+                        <div class="achievement">
+                            <div class="achievement-icon">🎯</div>
+                            <div class="achievement-title">Primeira Tarefa</div>
+                            <div class="achievement-desc">Criou sua primeira tarefa</div>
+                        </div>
+
+                        <div class="achievement">
+                            <div class="achievement-icon">✅</div>
+                            <div class="achievement-title">Produtivo</div>
+                            <div class="achievement-desc">10 tarefas concluídas</div>
+                        </div>
+
+                        <div class="achievement">
+                            <div class="achievement-icon">🔥</div>
+                            <div class="achievement-title">Em Chamas</div>
+                            <div class="achievement-desc">7 dias consecutivos</div>
+                        </div>
+
+                        <div class="achievement locked">
+                            <div class="achievement-icon">⭐</div>
+                            <div class="achievement-title">Especialista</div>
+                            <div class="achievement-desc">50 tarefas concluídas</div>
+                        </div>
+
+                        <div class="achievement locked">
+                            <div class="achievement-icon">👑</div>
+                            <div class="achievement-title">Mestre</div>
+                            <div class="achievement-desc">100 tarefas concluídas</div>
+                        </div>
+
+                        <div class="achievement locked">
+                            <div class="achievement-icon">💎</div>
+                            <div class="achievement-title">Lendário</div>
+                            <div class="achievement-desc">200 tarefas concluídas</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Zona de Perigo -->
+                <div class="content-card">
+                    <h2 class="card-title">⚠️ Zona de Perigo</h2>
+                    
+                    <div class="danger-zone">
+                        <h3 class="danger-title">🗑️ Excluir Conta</h3>
+                        <p class="danger-text">
+                            Ao excluir sua conta, todos os seus dados, tarefas e informações serão 
+                            permanentemente removidos. Esta ação não pode ser desfeita.
+                        </p>
+                        <button class="btn btn-danger" onclick="confirmDeleteAccount()">
+                            🗑️ Excluir Minha Conta
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

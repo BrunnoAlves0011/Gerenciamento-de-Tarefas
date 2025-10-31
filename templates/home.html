@@ -13,7 +13,12 @@
     <div class="container">
         <header>
             <div class="user-info">
-                <div class="avatar">{{ user[0:2] | upper }}</div>
+                <a href="/home/perfil" style="text-decoration: none; cursor: pointer;">
+                    <div class="avatar" style="transition: transform 0.3s ease;"
+                        onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        {{ user[0:2] | upper }}
+                    </div>
+                </a>
                 <div>
                     <h1>Olá, {{ user }}! 👋</h1>
                     <p class="welcome-text">{{ data_atual | capitalize }}</p>
@@ -131,11 +136,13 @@
                         <div class="stat-label">TOTAL</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number">{{ tarefas | selectattr('concluido', 'equalto', False) | list | length }}</div>
+                        <div class="stat-number">{{ tarefas | selectattr('concluido', 'equalto', False) | list | length
+                            }}</div>
                         <div class="stat-label">PENDENTES</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number">{{ tarefas | selectattr('concluido', 'equalto', True) | list | length }}</div>
+                        <div class="stat-number">{{ tarefas | selectattr('concluido', 'equalto', True) | list | length
+                            }}</div>
                         <div class="stat-label">CONCLUÍDAS</div>
                     </div>
                 </div>
@@ -143,39 +150,51 @@
                     <div class="progress-item">
                         <div class="progress-label">
                             <span><strong>Trabalho</strong></span>
-                            <span>{{ ((tarefas | selectattr('categoria.value', 'equalto', 'Trabalho') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%</span>
+                            <span>{{ ((tarefas | selectattr('categoria.value', 'equalto', 'Trabalho') | list | length) /
+                                (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%</span>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: {{ ((tarefas | selectattr('categoria.value', 'equalto', 'Trabalho') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%"></div>
+                            <div class="progress-fill"
+                                style="width: {{ ((tarefas | selectattr('categoria.value', 'equalto', 'Trabalho') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%">
+                            </div>
                         </div>
                     </div>
 
                     <div class="progress-item">
                         <div class="progress-label">
                             <span><strong>Pessoal</strong></span>
-                            <span>{{ ((tarefas | selectattr('categoria.value', 'equalto', 'Pessoal') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%</span>
+                            <span>{{ ((tarefas | selectattr('categoria.value', 'equalto', 'Pessoal') | list | length) /
+                                (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%</span>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: {{ ((tarefas | selectattr('categoria.value', 'equalto', 'Pessoal') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%"></div>
+                            <div class="progress-fill"
+                                style="width: {{ ((tarefas | selectattr('categoria.value', 'equalto', 'Pessoal') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%">
+                            </div>
                         </div>
                     </div>
 
                     <div class="progress-item">
                         <div class="progress-label">
                             <span><strong>Estudos</strong></span>
-                            <span>{{ ((tarefas | selectattr('categoria.value', 'equalto', 'Estudos') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%</span>
+                            <span>{{ ((tarefas | selectattr('categoria.value', 'equalto', 'Estudos') | list | length) /
+                                (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%</span>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: {{ ((tarefas | selectattr('categoria.value', 'equalto', 'Estudos') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%"></div>
+                            <div class="progress-fill"
+                                style="width: {{ ((tarefas | selectattr('categoria.value', 'equalto', 'Estudos') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%">
+                            </div>
                         </div>
                     </div>
                     <div class="progress-item">
                         <div class="progress-label">
                             <span><strong>Outros</strong></span>
-                            <span>{{ ((tarefas | selectattr('categoria.value', 'equalto', '') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%</span>
+                            <span>{{ ((tarefas | selectattr('categoria.value', 'equalto', '') | list | length) /
+                                (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%</span>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: {{ ((tarefas | selectattr('categoria.value', 'equalto', '') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%"></div>
+                            <div class="progress-fill"
+                                style="width: {{ ((tarefas | selectattr('categoria.value', 'equalto', '') | list | length) / (tarefas|length) * 100) | round(1) if tarefas|length > 0 else 0 }}%">
+                            </div>
                         </div>
                     </div>
                 </div>
