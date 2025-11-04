@@ -38,7 +38,8 @@ def get_db():
 # Tela Inicial
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    if not request.session.get("logged_in"):
+    print(request.session.get("logged_in"))
+    if request.session.get("logged_in"):
         return templates.TemplateResponse("login.html", {"request": request}, Form=Form)
     else:
         return templates.TemplateResponse("home.html", {"request": request})
@@ -207,7 +208,6 @@ def config(request: Request, db: Session = Depends(get_db)):
         "total_tarefas": total_tarefas
     })
 
-
 @app.get("/config/exportar")
 def exportar_dados(request: Request, db: Session = Depends(get_db)):
     try:
@@ -261,7 +261,6 @@ def exportar_dados(request: Request, db: Session = Depends(get_db)):
             status_code=500,
             content={"error": f"Erro ao exportar dados: {str(e)}"}
         )
-
 
 @app.post("/config/importar-url")
 def importar_dados_url(request: Request, db: Session = Depends(get_db)):
@@ -341,7 +340,6 @@ def importar_dados_url(request: Request, db: Session = Depends(get_db)):
             status_code=500,
             content={"error": f"Erro ao importar dados: {str(e)}"}
         )
-
 
 @app.post("/config/importar-arquivo")
 def importar_dados(request: Request, db: Session = Depends(get_db)):
