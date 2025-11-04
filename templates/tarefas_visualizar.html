@@ -7,7 +7,6 @@
     <title>Nova Tarefa - Gerenciador de Tarefas</title>
     <link rel="stylesheet" href="/static/css/taf_criar.css">
     <script src="/static/js/toast.js"></script>
-    <script src="/static/js/script_taf_editar.js"></script>
 </head>
 
 <body>
@@ -17,32 +16,30 @@
                 <button class="back-btn" onclick="goBack()">
                     ← Voltar
                 </button>
-                <h1>🖊️ Editar Tarefa</h1>
+                <h1>👓 Visualizar Tarefa</h1>
             </div>
         </header>
 
         <div class="form-container">
             <div class="form-header">
-                <h2>Editar Tarefa</h2>
-                <!-- <p>Preencha os dados abaixo para adicionar uma nova tarefa</p> -->
+                <h2>Visualizar Tarefa</h2>
             </div>
 
             <div class="info-box">
                 <div class="info-icon">💡</div>
                 <div>
-                    <strong>Dica:</strong> Depois de editar a tarefa, não esqueca de salvar, além de que após o
-                    salvamento da edição, não tem como voltar á forma anterior, edite com cuidado!
+                    <strong>Dica:</strong> Visualizando a tarefa, nessa pagina não é possivel editar a tarefa!
                 </div>
             </div>
 
             <form id="taskForm">
                 <div class="form-group">
                     <label for="titulo">
-                        Título da Tarefa <span class="required">*</span>
+                        Título da Tarefa
                     </label>
                     <input type="text" value="{{ tarefa.titulo }}" id="titulo" name="titulo"
                         placeholder="Ex: Revisar proposta de projeto" maxlength="100" required
-                        oninput="updateCharCounter('titulo', 100)">
+                        oninput="updateCharCounter('titulo', 100)" disabled>
                     <div class="char-counter">
                         <span id="titulo-counter">0</span>/100 caracteres
                     </div>
@@ -50,10 +47,10 @@
 
                 <div class="form-group">
                     <label for="descricao">
-                        Descrição <span class="required">*</span>
+                        Descrição
                     </label>
                     <textarea id="descricao" name="descricao" placeholder="Descreva os detalhes da tarefa..."
-                        maxlength="300" required
+                        maxlength="300" required disabled
                         oninput="updateCharCounter('descricao', 300)">{{ tarefa.descricao }}</textarea>
                     <div class="char-counter">
                         <span id="descricao-counter">0</span>/300 caracteres
@@ -64,19 +61,19 @@
                     <label for="data">
                         Data de Vencimento
                     </label>
-                    <input type="date" id="data" name="data" min="" value="{{ tarefa.data }}">
+                    <input type="date" id="data" name="data" min="" value="{{ tarefa.data }}" disabled>
                 </div>
 
                 <div class="form-group">
                     <label>
-                        Prioridade <span class="required">*</span>
+                        Prioridade
                     </label>
                     <div class="radio-group">
                         <div class="radio-option">
                             {% if tarefa.prioridade.value == 'Urgente' %}
-                            <input type="radio" id="urgente" name="prioridade" value="Urgente" required checked>
+                            <input type="radio" id="urgente" name="prioridade" value="Urgente" required checked disabled>
                             {% else %}
-                            <input type="radio" id="urgente" name="prioridade" value="Urgente" required>
+                            <input type="radio" id="urgente" name="prioridade" value="Urgente" required disabled>
                             {% endif %}
                             <label for="urgente" class="radio-label priority-urgente">
                                 🔴 Urgente
@@ -84,9 +81,9 @@
                         </div>
                         <div class="radio-option">
                             {% if tarefa.prioridade.value == 'Alta' %}
-                            <input type="radio" id="alta" name="prioridade" value="Alta" checked>
+                            <input type="radio" id="alta" name="prioridade" value="Alta" checked disabled>
                             {% else %}
-                            <input type="radio" id="alta" name="prioridade" value="Alta">
+                            <input type="radio" id="alta" name="prioridade" value="Alta" disabled>
                             {% endif %}
                             <label for="alta" class="radio-label priority-alta">
                                 🟠 Alta
@@ -94,9 +91,9 @@
                         </div>
                         <div class="radio-option">
                             {% if tarefa.prioridade.value == 'Media' %}
-                            <input type="radio" id="media" name="prioridade" value="Media" checked>
+                            <input type="radio" id="media" name="prioridade" value="Media" checked disabled>
                             {% else %}
-                            <input type="radio" id="media" name="prioridade" value="Media">
+                            <input type="radio" id="media" name="prioridade" value="Media" disabled>
                             {% endif %}
                             <label for="media" class="radio-label priority-media">
                                 🔵 Média
@@ -104,9 +101,9 @@
                         </div>
                         <div class="radio-option">
                             {% if tarefa.prioridade.value == 'Baixa' %}
-                            <input type="radio" id="baixa" name="prioridade" value="Baixa" checked>
+                            <input type="radio" id="baixa" name="prioridade" value="Baixa" checked disabled>
                             {% else %}
-                            <input type="radio" id="baixa" name="prioridade" value="Baixa">
+                            <input type="radio" id="baixa" name="prioridade" value="Baixa" disabled>
                             {% endif %}
                             <label for="baixa" class="radio-label priority-baixa">
                                 🟢 Baixa
@@ -114,12 +111,17 @@
                         </div>
                     </div>
                 </div>
-                                    <div class="radio-group" >
+
+                <div class="form-group">
+                    <label>
+                        Categoria <span class="required">*</span>
+                    </label>
+                    <div class="radio-group" >
                         <div class="radio-option">
                             {% if tarefa.categoria.value == 'Trabalho' %}
-                            <input type="radio" id="trabalho" name="categoria" value="Trabalho" checked>
+                            <input type="radio" id="trabalho" name="categoria" value="Trabalho" checked disabled>
                             {% else %}
-                            <input type="radio" id="trabalho" name="categoria" value="Trabalho">
+                            <input type="radio" id="trabalho" name="categoria" value="Trabalho" disabled>
                             {% endif %}
                             <label for="trabalho" class="radio-label">
                                 💼 Trabalho
@@ -127,9 +129,9 @@
                         </div>
                         <div class="radio-option">
                             {% if tarefa.categoria.value == 'Pessoal' %}
-                            <input type="radio" id="pessoal" name="categoria" value="Pessoal" checked>
+                            <input type="radio" id="pessoal" name="categoria" value="Pessoal" checked disabled>
                             {% else %}
-                            <input type="radio" id="pessoal" name="categoria" value="Pessoal">
+                            <input type="radio" id="pessoal" name="categoria" value="Pessoal" disabled>
                             {% endif %}
                             <label for="pessoal" class="radio-label">
                                 👤 Pessoal
@@ -137,9 +139,9 @@
                         </div>
                         <div class="radio-option">
                             {% if tarefa.categoria.value == 'Estudos' %}
-                            <input type="radio" id="estudos" name="categoria" value="Estudos" checked>
+                            <input type="radio" id="estudos" name="categoria" value="Estudos" checked disabled>
                             {% else %}
-                            <input type="radio" id="estudos" name="categoria" value="Estudos">
+                            <input type="radio" id="estudos" name="categoria" value="Estudos" disabled>
                             {% endif %}
                             <label for="estudos" class="radio-label">
                                 📚 Estudos
@@ -147,29 +149,28 @@
                         </div>
                         <div class="radio-option">
                             {% if tarefa.categoria.value == 'Outros' %}
-                            <input type="radio" id="outros" name="categoria" value="Outros" checked>
+                            <input type="radio" id="outros" name="categoria" value="Outros" checked disabled>
                             {% else %}
-                            <input type="radio" id="outros" name="categoria" value="Outros">
+                            <input type="radio" id="outros" name="categoria" value="Outros" disabled>
                             {% endif %}
                             <label for="Outros" class="radio-label">
                                 ❤️ Outros
                             </label>
                         </div>
                     </div>
+                </div>
 
                 <div class="error-message" id="errorMessage"></div>
                 <div class="success-message" id="successMessage"></div>
-                <div class="form-actions">
-                    <!-- <button type="button" class="btn btn-secondary" onclick="resetForm()">
-                        🔄 Limpar
-                    </button> -->
-                    <button type="submit" class="btn btn-primary" >
-                        ✓ Editar Tarefa
-                    </button>
-                </div>
             </form>
         </div>
     </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
 </body>
 
 </html>

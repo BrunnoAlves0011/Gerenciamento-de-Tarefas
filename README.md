@@ -36,39 +36,20 @@ git clone https://github.com/BrunnoAlves0011/Gerenciamento-de-Tarefas
 cd gerenciador-tarefas
 ```
 
-2. **Crie um ambiente virtual**
-```bash
-# Windows
-python -m venv venv
-venv\Scripts\activate
-
-# Linux/Mac
-python3 -m venv venv
-source venv/bin/activate
-```
-
-3. **Instale as dependências**
+2. **Instale as dependências**
 ```bash
 pip install -r requirements.txt
 ```
 
-4. **Configure as variáveis de ambiente**
-
-Crie um arquivo `.env` na raiz do projeto:
-```env
-SECRET_KEY=sua_chave_secreta_aqui
-DATABASE_URL=sqlite:///./tarefas.db
-SESSION_SECRET=sua_chave_de_sessao_aqui
-```
-
-5. **Execute o servidor**
+3. **Execute o servidor**
+Dentro da pasta
 ```bash
-uvicorn main:app --reload
+python .\main.py
 ```
 
-6. **Acesse o sistema**
+4. **Acesse o sistema**
 
-Abra seu navegador e acesse: `http://localhost:8000`
+Abra seu navegador e acesse: `http://127.0.0.1:8000`
 
 ## 📂 Estrutura do Projeto
 ```

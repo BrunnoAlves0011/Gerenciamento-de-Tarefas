@@ -34,6 +34,9 @@
                 <button class="btn btn-secondary" onclick="viewAllTasks()">
                     📋 Ver Todas
                 </button>
+                <button class="btn btn-config" onclick="viewConfig()">
+                    ⚙️ Configurações
+                </button>
                 <button class="btn btn-primary" onclick="logout()">
                     Sair
                 </button>
@@ -45,44 +48,49 @@
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">📅 Tarefas de Hoje</h2>
-                    <span class="badge">5 tarefas</span>
+                    <span class="badge">{{ count_hoje }} tarefa{% if count_hoje != 1 %}s{% endif %}</span>
                 </div>
                 <ul class="task-list">
-                    <li class="task-item urgent">
-                        <div class="task-title">Revisar proposta de projeto</div>
+                    {% if tarefas_hoje %}
+                    {% for tarefa in tarefas_hoje %}
+                    <li class="task-item {% if tarefa.status == 'Concluída' %}completed{% elif tarefa.prioridade == 'Alta' %}urgent{% endif %}"
+                        onclick="viewTask(event, '{{ tarefa.id }}')">
+                        <div class="task-title">{{ tarefa.titulo }}</div>
                         <div class="task-meta">
-                            <span>⏰ 10:00</span>
-                            <span>🔴 Urgente</span>
-                        </div>
-                    </li>
-                    <li class="task-item completed">
-                        <div class="task-title">Reunião com equipe</div>
-                        <div class="task-meta">
-                            <span>⏰ 09:00</span>
+
+                            {% if tarefa.categoria.value == 'Trabalho' %}
+                            <span>💼 {{ tarefa.categoria.value }}</span>
+                            {% elif tarefa.categoria.value == 'Estudos' %}
+                            <span>📚 {{ tarefa.categoria.value }}</span>
+                            {% elif tarefa.categoria.value == 'Pessoal' %}
+                            <span>🙍‍♂️ {{ tarefa.categoria.value }}</span>
+                            {% else %}
+                            <span>📍 {{ tarefa.categoria.value }}</span>
+                            {% endif %}
+
+                            {% if tarefa.status == 'Concluída' %}
                             <span>✅ Concluída</span>
+                            {% elif tarefa.prioridade.value == 'Urgente' %}
+                            <span>🔴 Urgente</span>
+                            {% elif tarefa.prioridade.value == 'Alta' %}
+                            <span>🟠 Alta</span>
+                            {% elif tarefa.prioridade.value == 'Media' %}
+                            <span>🔵 Média</span>
+                            {% elif tarefa.prioridade.value == 'Baixa' %}
+                            <span>🟢 Baixa</span>
+                            {% else %}
+                            <span>📝 {{ tarefa.status }}</span>
+                            {% endif %}
                         </div>
                     </li>
+                    {% endfor %}
+                    {% else %}
                     <li class="task-item">
-                        <div class="task-title">Atualizar documentação</div>
-                        <div class="task-meta">
-                            <span>⏰ 14:00</span>
-                            <span>📝 Em andamento</span>
+                        <div class="task-title" style="text-align: center; color: #888;">
+                            Nenhuma tarefa para hoje 🎉
                         </div>
                     </li>
-                    <li class="task-item">
-                        <div class="task-title">Responder e-mails importantes</div>
-                        <div class="task-meta">
-                            <span>⏰ 16:00</span>
-                            <span>📧 Pendente</span>
-                        </div>
-                    </li>
-                    <li class="task-item">
-                        <div class="task-title">Preparar apresentação</div>
-                        <div class="task-meta">
-                            <span>⏰ 17:30</span>
-                            <span>📊 Pendente</span>
-                        </div>
-                    </li>
+                    {% endif %}
                 </ul>
             </div>
 
@@ -90,37 +98,47 @@
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">📆 Esta Semana</h2>
-                    <span class="badge">12 tarefas</span>
+                    <span class="badge">{{ count_semana }} tarefa{% if count_semana != 1 %}s{% endif %}</span>
                 </div>
                 <ul class="task-list">
-                    <li class="task-item">
-                        <div class="task-title">Desenvolver nova funcionalidade</div>
+                    {% if tarefas_semana %}
+                    {% for tarefa in tarefas_semana %}
+                    <li class="task-item {% if tarefa.prioridade == 'Alta' %}urgent{% endif %}"
+                        onclick="viewTask(event, '{{ tarefa.id }}')">
+                        <div class="task-title">{{ tarefa.titulo }}</div>
                         <div class="task-meta">
-                            <span>📅 Qui</span>
-                            <span>💻 Desenvolvimento</span>
-                        </div>
-                    </li>
-                    <li class="task-item">
-                        <div class="task-title">Code review do time</div>
-                        <div class="task-meta">
-                            <span>📅 Qui</span>
-                            <span>👥 Equipe</span>
-                        </div>
-                    </li>
-                    <li class="task-item">
-                        <div class="task-title">Planejamento sprint</div>
-                        <div class="task-meta">
-                            <span>📅 Sex</span>
-                            <span>🎯 Planejamento</span>
-                        </div>
-                    </li>
-                    <li class="task-item urgent">
-                        <div class="task-title">Entrega do relatório mensal</div>
-                        <div class="task-meta">
-                            <span>📅 Sex</span>
+
+                            {% if tarefa.categoria.value == 'Trabalho' %}
+                            <span>💼 {{ tarefa.categoria.value }}</span>
+                            {% elif tarefa.categoria.value == 'Estudos' %}
+                            <span>📚 {{ tarefa.categoria.value }}</span>
+                            {% elif tarefa.categoria.value == 'Pessoal' %}
+                            <span>🙍‍♂️ {{ tarefa.categoria.value }}</span>
+                            {% else %}
+                            <span>📍 {{ tarefa.categoria.value }}</span>
+                            {% endif %}
+
+                            {% if tarefa.prioridade.value == 'Urgente' %}
                             <span>🔴 Urgente</span>
+                            {% elif tarefa.prioridade.value == 'Alta' %}
+                            <span>🟠 Alta</span>
+                            {% elif tarefa.prioridade.value == 'Media' %}
+                            <span>🔵 Média</span>
+                            {% elif tarefa.prioridade.value == 'Baixa' %}
+                            <span>🟢 Baixa</span>
+                            {% else %}
+                            <span>📝 {{ tarefa.status }}</span>
+                            {% endif %}
                         </div>
                     </li>
+                    {% endfor %}
+                    {% else %}
+                    <li class="task-item">
+                        <div class="task-title" style="text-align: center; color: #888;">
+                            Nenhuma tarefa esta semana 🎉
+                        </div>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
 
@@ -234,19 +252,18 @@
             window.location.href = '/home/ajuda';
         }
 
-        // Adicionar interatividade aos itens de tarefa
-        document.querySelectorAll('.task-item').forEach(item => {
-            item.addEventListener('click', function () {
-                if (!this.classList.contains('completed')) {
-                    const confirm = window.confirm('Marcar tarefa como concluída?');
-                    if (confirm) {
-                        this.classList.add('completed');
-                    }
-                }
-            });
-        });
+        function viewConfig() {
+            window.location.href = '/config';
+        }
 
-        // Animação das barras de progresso ao carregar
+        function viewTask(event, taskId) {
+            if (event) {
+                event.preventDefault();
+            }
+
+            window.location.href = `/home/tarefa_visualizar/${taskId}`;
+        }
+
         window.addEventListener('load', function () {
             document.querySelectorAll('.progress-fill').forEach(bar => {
                 const width = bar.style.width;

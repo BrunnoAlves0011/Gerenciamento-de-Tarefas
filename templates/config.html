@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações - Task Manager</title>
+    <link rel="stylesheet" href="/static/css/config.css">
+    <script src="/static/js/script_config.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ Configurações</h1>
+            <a href="/home" class="btn-voltar">← Voltar ao Início</a>
+        </div>
+
+        <div id="alert" class="alert"></div>
+
+        <!-- Estatísticas -->
+        <div class="card">
+            <h2 class="card-title">📊 Estatísticas</h2>
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-number">{{ total_tarefas }}</div>
+                    <div class="stat-label">Total de Tarefas</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">{{ user if user else 'Usuário' }}</div>
+                    <div class="stat-label">Usuário Atual</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exportar Dados -->
+        <div class="card">
+            <h2 class="card-title">📤 Exportar Dados</h2>
+            <p class="card-description">
+                Faça backup de todas as suas tarefas em formato JSON compactado (ZIP).
+            </p>
+            <button onclick="exportarDados()" class="btn btn-primary btn-block">
+                💾 Baixar Backup Completo
+            </button>
+        </div>
+
+        <!-- Importar de URL -->
+        <div class="card">
+            <h2 class="card-title">🌐 Importar de URL</h2>
+            <p class="card-description">
+                Importe tarefas de um arquivo JSON hospedado na web.
+            </p>
+            
+            <div class="form-group">
+                <label for="urlImport">URL do arquivo JSON:</label>
+                <input type="url" id="urlImport" placeholder="https://exemplo.com/tarefas.json">
+            </div>
+            
+            <button onclick="importarDeURL()" class="btn btn-success btn-block">
+                🔗 Importar da URL
+            </button>
+
+            <div class="divider"></div>
+
+            <p style="color: #666; font-size: 0.9rem;">
+                <strong>Exemplo de URL pública para teste:</strong><br>
+                <code style="background: #f8f9fa; padding: 5px 10px; border-radius: 4px; display: block; margin-top: 5px;">
+                    https://jsonplaceholder.typicode.com/todos
+                </code>
+            </p>
+        </div>
+
+        <!-- Importar de Arquivo -->
+        <div class="card">
+            <h2 class="card-title">📁 Importar de Arquivo</h2>
+            <p class="card-description">
+                Importe tarefas de um arquivo JSON ou ZIP do seu computador.
+            </p>
+            
+            <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                <input type="file" id="fileInput" accept=".json,.zip" onchange="importarDeArquivo(this)">
+                <div style="font-size: 3rem; margin-bottom: 10px;">📂</div>
+                <div style="color: #667eea; font-weight: 600;">Clique para selecionar um arquivo</div>
+                <div style="color: #666; font-size: 0.9rem; margin-top: 5px;">Arquivos JSON ou ZIP</div>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px; color: #666;">Processando...</p>
+        </div>
+    </div>
+</body>
+</html>

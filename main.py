@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, Depends, Request, Form
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.responses import RedirectResponse, HTMLResponse, StreamingResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from banco import SessionLocal, engine
@@ -7,8 +7,14 @@ from modelo import Tarefas, Users, Perfil, Base
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 from starlette.middleware.sessions import SessionMiddleware
-from datetime import datetime
+from datetime import datetime, timedelta
 import locale
+
+import json
+import zipfile
+import io
+from functools import wraps
+import requests
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI()
@@ -32,7 +38,7 @@ def get_db():
 # Tela Inicial
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    if request.session.get("logged_in"):
+    if not request.session.get("logged_in"):
         return templates.TemplateResponse("login.html", {"request": request}, Form=Form)
     else:
         return templates.TemplateResponse("home.html", {"request": request})
@@ -46,6 +52,26 @@ def homePage(request: Request, db: Session = Depends(get_db), error: str = None,
         user = request.session.get("username")
         tarefas = db.query(Tarefas).filter_by(user=user).all()
         data_atual = datetime.now().strftime("%A, %d de %B de %Y")
+
+        hoje = datetime.now().date()
+        inicio_semana = hoje - timedelta(days=hoje.weekday())
+        fim_semana = inicio_semana + timedelta(days=6)
+        
+        # Tarefas de hoje
+        tarefas_hoje = db.query(Tarefas).filter(
+            Tarefas.user == user,
+            Tarefas.data == hoje
+        ).order_by(Tarefas.data, Tarefas.prioridade).all()
+        
+        # Tarefas da semana
+        tarefas_semana = db.query(Tarefas).filter(
+            Tarefas.user == user,
+            Tarefas.data.between(inicio_semana, fim_semana),
+            Tarefas.data > hoje
+        ).order_by(Tarefas.data).all()
+        
+        count_hoje = len(tarefas_hoje)
+        count_semana = len(tarefas_semana)
 
         error_msg = None
         success_msg = None
@@ -66,7 +92,11 @@ def homePage(request: Request, db: Session = Depends(get_db), error: str = None,
             "user": user,
             "error": error_msg,
             "success": success_msg,
-            "data_atual": data_atual
+            "data_atual": data_atual,
+            "tarefas_hoje": tarefas_hoje,
+            "tarefas_semana": tarefas_semana,
+            "count_hoje": count_hoje,
+            "count_semana": count_semana
             })
     else:
         return templates.TemplateResponse("login.html", {"request": request})
@@ -165,6 +195,233 @@ def ajuda(request: Request):
 
 
 
+# Tela Config
+@app.get("/config")
+def config(request: Request, db: Session = Depends(get_db)):
+    user = request.session.get("username")
+    total_tarefas = db.query(Tarefas).filter(Tarefas.user == user).count()
+
+    return templates.TemplateResponse("config.html", {
+        "request": request,
+        "user": user,
+        "total_tarefas": total_tarefas
+    })
+
+
+@app.get("/config/exportar")
+def exportar_dados(request: Request, db: Session = Depends(get_db)):
+    try:
+        user = request.session.get("username")
+        
+        # Busca todas as tarefas do usuário
+        tarefas = db.query(Tarefas).filter(Tarefas.user == user).all()
+        
+        # Converte para dicionário
+        dados_export = {
+            'exportado_em': datetime.now().isoformat(),
+            'usuario': user,
+            'total_tarefas': len(tarefas),
+            'tarefas': []
+        }
+        
+        for tarefa in tarefas:
+            dados_export['tarefas'].append({
+                'id': tarefa.id,
+                'titulo': tarefa.titulo,
+                'descricao': tarefa.descricao,
+                'data': tarefa.data.isoformat() if tarefa.data else None,
+                'prioridade': tarefa.prioridade,
+                'categoria': tarefa.categoria,
+                'concluido': tarefa.concluido
+            })
+        
+        # Cria arquivo JSON
+        json_data = json.dumps(dados_export, ensure_ascii=False, indent=2)
+        
+        # Cria arquivo ZIP em memória
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            # Nome do arquivo com data
+            filename = f'tarefas_backup_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
+            zip_file.writestr(filename, json_data)
+        
+        zip_buffer.seek(0)
+        
+        # Retorna o arquivo ZIP
+        return StreamingResponse(
+            zip_buffer,
+            media_type='application/zip',
+            headers={
+                "Content-Disposition": f'attachment; filename="{filename}"'
+            }
+        )
+        
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Erro ao exportar dados: {str(e)}"}
+        )
+
+
+@app.post("/config/importar-url")
+def importar_dados_url(request: Request, db: Session = Depends(get_db)):
+    try:
+        data = request.get_json()
+        url = data.get('url')
+        
+        if not url:
+            return JSONResponse(
+                status_code=400,
+                content={"error": f"URL não fornecida"}
+            )
+        
+        # Faz requisição para a URL
+        response = requests.get(url, timeout=30)
+        response.raise_for_status()
+        
+        # Tenta decodificar JSON
+        dados_importados = response.json()
+        
+        # Valida estrutura básica
+        if 'tarefas' not in dados_importados:
+            return JSONResponse(
+                status_code=400,
+                content={"error": f"Formato de Dados invalidos"}
+            )
+        
+        user = request.session.get("username")
+        tarefas_importadas = 0
+        
+        # Importa as tarefas
+        for tarefa_data in dados_importados['tarefas']:
+            # Verifica se tarefa já existe (evita duplicatas)
+            tarefa_existente = db.query(Tarefas).filter(
+                Tarefas.user   == user,
+                Tarefas.titulo == tarefa_data.get('titulo'),
+                Tarefas.data   == tarefa_data.get('data')
+            ).first()
+            
+            if not tarefa_existente:
+                nova_tarefa = Tarefas(
+                    user=user,
+                    titulo=tarefa_data.get('titulo'),
+                    descricao=tarefa_data.get('descricao'),
+                    data=datetime.fromisoformat(tarefa_data.get('data')) if tarefa_data.get('data') else None,
+                    prioridade=tarefa_data.get('prioridade', 'Média'),
+                    categoria=tarefa_data.get('categoria', 'Outros'),
+                    status=tarefa_data.get('status', False)
+                )
+                db.add(nova_tarefa)
+                tarefas_importadas += 1
+        
+        db.commit()
+        
+        return JSONResponse(
+            status_code=200,
+            content={
+                'success': True,
+                'mensagem': f'{tarefas_importadas} tarefas importadas com sucesso!',
+                'total_importadas': tarefas_importadas
+            }
+        )
+        
+    except requests.RequestException as e:
+        return JSONResponse(
+            status_code=400,
+            content={"error": f"Erro ao acessar URL: {str(e)}"}
+        )
+    except json.JSONDecodeError:
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Formato JSON invalido"}
+        )
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Erro ao importar dados: {str(e)}"}
+        )
+
+
+@app.post("/config/importar-arquivo")
+def importar_dados(request: Request, db: Session = Depends(get_db)):
+    try:
+        if 'arquivo' not in request.files:
+            return JSONResponse(
+                status_code=400,
+                content={"error": f"Nenhum arquivo enviado"}
+            )
+        
+        arquivo = request.files['arquivo']
+        
+        if arquivo.filename == '':
+            return JSONResponse(
+                status_code=400,
+                content={"error": f"Arquivo sem nome"}
+            )
+        
+        # Lê o conteúdo do arquivo
+        if arquivo.filename.endswith('.zip'):
+            # Extrai JSON do ZIP
+            with zipfile.ZipFile(arquivo) as zip_file:
+                json_filename = zip_file.namelist()[0]
+                with zip_file.open(json_filename) as json_file:
+                    dados_importados = json.load(json_file)
+        else:
+            # Arquivo JSON direto
+            dados_importados = json.load(arquivo)
+        
+        # Valida estrutura
+        if 'tarefas' not in dados_importados:
+            return JSONResponse(
+                status_code=400,
+                content={"error": f"Formato de dados invalido"}
+            )
+        
+        user = request.session.get("username")
+        tarefas_importadas = 0
+        
+        # Importa as tarefas
+        for tarefa_data in dados_importados['tarefas']:
+            tarefa_existente = db.query(Tarefas).filter(
+                Tarefas.user   == user,
+                Tarefas.titulo == tarefa_data.get('titulo'),
+                Tarefas.data   == tarefa_data.get('data')
+            ).first()
+            
+            if not tarefa_existente:
+                nova_tarefa = Tarefas(
+                    user=user,
+                    titulo=tarefa_data.get('titulo'),
+                    descricao=tarefa_data.get('descricao'),
+                    data=datetime.fromisoformat(tarefa_data.get('data')) if tarefa_data.get('data') else None,
+                    prioridade=tarefa_data.get('prioridade', 'Média'),
+                    categoria=tarefa_data.get('categoria', 'Outros'),
+                    status=tarefa_data.get('status', False)
+                )
+                db.add(nova_tarefa)
+                tarefas_importadas += 1
+        
+        db.commit()
+        
+        return JSONResponse(
+            status_code=200,
+            content={
+                'success': True,
+                'mensagem': f'{tarefas_importadas} tarefas importadas com sucesso!',
+                'total_importadas': tarefas_importadas
+            }
+        )
+        
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(
+            status_code=400,
+            content={"error": f'Erro ao importar dados: {str(e)}'}
+        )
+
+
+
 # Tela Lista Tarefas
 @app.get("/home/tarefas_lista")
 def tarefas_lista(request: Request, db: Session = Depends(get_db)):
@@ -184,6 +441,22 @@ def tarefas_lista(request: Request, db: Session = Depends(get_db)):
         "tarefas": tarefas
         })
 
+@app.get("/home/tarefa_visualizar/{tarefa_id}")
+def tarefa_view(request: Request, tarefa_id: int, db: Session = Depends(get_db)):
+    user = request.session.get("username")
+    tarefa = db.query(Tarefas).filter(
+        Tarefas.id == tarefa_id,
+        Tarefas.user == user
+    ).first()
+
+    if tarefa:
+        return templates.TemplateResponse("tarefas_visualizar.html", {
+            "request": request,
+            "tarefa": tarefa,
+            "taskId" : tarefa_id
+        })
+    else:
+        raise HTTPException(status_code=404, detail="Tarefa não encontrada")
 
 
 # Tela Perfil
@@ -238,7 +511,7 @@ def deletar_conta(request: Request, user: str, db: Session = Depends(get_db)):
 
     db.commit()
 
-    request.session.clear()
+    logout()
 
     return {"message": "Tarefa excluída com sucesso"}
 

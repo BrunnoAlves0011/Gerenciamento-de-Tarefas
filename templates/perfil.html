@@ -68,27 +68,27 @@
 
                         <div class="form-group">
                             <label>Email</label>
-                            <input type="email" id="email" value="{{ profile.email if profile else '' }}" placeholder="seu@email.com">
+                            <input type="email" id="email" value="{{ profile.email if profile else '' }}" placeholder="seu@email.com" disabled>
                         </div>
 
                         <div class="form-group">
                             <label>Nome Completo</label>
-                            <input type="text" id="fullname" value="{{ profile.nome if profile else '' }}" placeholder="Seu nome completo">
+                            <input type="text" id="fullname" value="{{ profile.nome if profile else '' }}" placeholder="Seu nome completo" disabled>
                         </div>
 
-                        <div class="form-actions">
+                        <!-- <div class="form-actions">
                             <button type="submit" class="btn btn-primary">
                                 💾 Salvar Alterações
                             </button>
                             <button type="button" class="btn btn-secondary" onclick="resetForm()">
                                 🔄 Cancelar
                             </button>
-                        </div>
+                        </div> -->
                     </form>
                 </div>
 
                 <!-- Alterar Senha -->
-                <div class="content-card">
+                <!-- <div class="content-card">
                     <h2 class="card-title">🔒 Alterar Senha</h2>
                     
                     <form id="passwordForm">
@@ -113,7 +113,7 @@
                             </button>
                         </div>
                     </form>
-                </div>
+                </div> -->
 
                 <!-- Conquistas -->
                 <div class="content-card">

@@ -59,7 +59,7 @@
                 {% if tarefa.prioridade == 'Urgente' %}
                 <div class="task-card urgent" data-task-id="{{ tarefa.id }}" data-status="pending"
                     data-priority="urgent" data-category="trabalho">
-                    <div class="task-header">
+                    <div class="task-header" onclick="viewTask(event)">
                         <div class="task-main">
                             <div class="task-title">{{ tarefa.titulo }}</div>
                             <div class="task-description">{{ tarefa.descricao }}</div>
@@ -95,7 +95,7 @@
                 {% elif tarefa.prioridade == 'Alta' %}
                 <div class="task-card" data-task-id="{{ tarefa.id }}" data-status="pending" data-priority="high"
                     data-category="trabalho">
-                    <div class="task-header">
+                    <div class="task-header" onclick="viewTask(event)">
                         <div class="task-main">
                             <div class="task-title">{{ tarefa.titulo }}</div>
                             <div class="task-description">{{ tarefa.descricao }}</div>
@@ -131,7 +131,7 @@
                 {% elif tarefa.prioridade == 'Media' %}
                 <div class="task-card" data-task-id="{{ tarefa.id }}" data-status="pending" data-priority="medium"
                     data-category="estudos">
-                    <div class="task-header">
+                    <div class="task-header" onclick="viewTask(event)">
                         <div class="task-main">
                             <div class="task-title">{{ tarefa.titulo }}</div>
                             <div class="task-description">{{ tarefa.descricao }}</div>
@@ -167,7 +167,7 @@
                 {% elif tarefa.prioridade == 'Baixa' %}
                 <div class="task-card" data-task-id="{{ tarefa.id }}" data-status="pending" data-priority="low"
                     data-category="{{ tarefa.categoria }}">
-                    <div class="task-header">
+                    <div class="task-header" onclick="viewTask(event)">
                         <div class="task-main">
                             <div class="task-title">{{ tarefa.titulo }}</div>
                             <div class="task-description">{{ tarefa.descricao }}</div>
@@ -207,7 +207,7 @@
                 <div class="task-card completed" data-task-id="{{ tarefa.id }}" data-status="completed"
                     data-priority="{{ tarefa.prioridade.value.lower() }}"
                     data-category="{{ tarefa.categoria.value.lower() }}">
-                    <div class="task-header">
+                    <div class="task-header" onclick="viewTask(event)">
                         <div class="task-main">
                             <div class="task-title">{{ tarefa.titulo }}</div>
                             <div class="task-description">{{ tarefa.descricao }}</div>
