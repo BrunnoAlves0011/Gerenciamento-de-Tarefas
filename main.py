@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, Request, Form
+from fastapi import FastAPI, HTTPException, Depends, Request, Form, UploadFile, File
 from fastapi.responses import RedirectResponse, HTMLResponse, StreamingResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -7,7 +7,7 @@ from modelo import Tarefas, Users, Perfil, Base
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 from starlette.middleware.sessions import SessionMiddleware
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 import locale
 
 import json
@@ -18,7 +18,7 @@ import requests
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI()
-app.add_middleware(SessionMiddleware, secret_key="supersecretkey")  # use a secure random key!
+app.add_middleware(SessionMiddleware, secret_key="supersecretkey")
 
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -230,6 +230,7 @@ def exportar_dados(request: Request, db: Session = Depends(get_db)):
                 'titulo': tarefa.titulo,
                 'descricao': tarefa.descricao,
                 'data': tarefa.data.isoformat() if tarefa.data else None,
+                'time': tarefa.time.strftime("%H:%M:%S") if tarefa.time else None,
                 'prioridade': tarefa.prioridade,
                 'categoria': tarefa.categoria,
                 'concluido': tarefa.concluido
@@ -263,7 +264,7 @@ def exportar_dados(request: Request, db: Session = Depends(get_db)):
         )
 
 @app.post("/config/importar-url")
-def importar_dados_url(request: Request, db: Session = Depends(get_db)):
+async def importar_dados_url(request: Request, db: Session = Depends(get_db)):
     try:
         data = request.get_json()
         url = data.get('url')
@@ -274,14 +275,11 @@ def importar_dados_url(request: Request, db: Session = Depends(get_db)):
                 content={"error": f"URL não fornecida"}
             )
         
-        # Faz requisição para a URL
         response = requests.get(url, timeout=30)
         response.raise_for_status()
         
-        # Tenta decodificar JSON
         dados_importados = response.json()
         
-        # Valida estrutura básica
         if 'tarefas' not in dados_importados:
             return JSONResponse(
                 status_code=400,
@@ -291,24 +289,31 @@ def importar_dados_url(request: Request, db: Session = Depends(get_db)):
         user = request.session.get("username")
         tarefas_importadas = 0
         
-        # Importa as tarefas
         for tarefa_data in dados_importados['tarefas']:
-            # Verifica se tarefa já existe (evita duplicatas)
             tarefa_existente = db.query(Tarefas).filter(
                 Tarefas.user   == user,
                 Tarefas.titulo == tarefa_data.get('titulo'),
-                Tarefas.data   == tarefa_data.get('data')
+                Tarefas.data   == tarefa_data.get('data'),
+                Tarefas.time   == tarefa_data.get('time')
             ).first()
             
+            time_value = None
+            if tarefa_data.get('time'):
+                time_str = tarefa_data.get('time')
+            if '.' in time_str:
+                time_str = time_str.split('.')[0]
+            time_value = datetime.strptime(time_str, "%H:%M:%S").time()
+
             if not tarefa_existente:
                 nova_tarefa = Tarefas(
                     user=user,
                     titulo=tarefa_data.get('titulo'),
                     descricao=tarefa_data.get('descricao'),
                     data=datetime.fromisoformat(tarefa_data.get('data')) if tarefa_data.get('data') else None,
+                    time=time_value,
                     prioridade=tarefa_data.get('prioridade', 'Média'),
                     categoria=tarefa_data.get('categoria', 'Outros'),
-                    status=tarefa_data.get('status', False)
+                    concluido=tarefa_data.get('concluido', False)
                 )
                 db.add(nova_tarefa)
                 tarefas_importadas += 1
@@ -342,60 +347,62 @@ def importar_dados_url(request: Request, db: Session = Depends(get_db)):
         )
 
 @app.post("/config/importar-arquivo")
-def importar_dados(request: Request, db: Session = Depends(get_db)):
+async def importar_dados(
+    request: Request, 
+    arquivo: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
     try:
-        if 'arquivo' not in request.files:
+        if not arquivo or arquivo.filename == '':
             return JSONResponse(
                 status_code=400,
-                content={"error": f"Nenhum arquivo enviado"}
+                content={"error": "Nenhum arquivo enviado"}
             )
         
-        arquivo = request.files['arquivo']
+        conteudo = await arquivo.read()
         
-        if arquivo.filename == '':
-            return JSONResponse(
-                status_code=400,
-                content={"error": f"Arquivo sem nome"}
-            )
-        
-        # Lê o conteúdo do arquivo
         if arquivo.filename.endswith('.zip'):
-            # Extrai JSON do ZIP
-            with zipfile.ZipFile(arquivo) as zip_file:
+            with zipfile.ZipFile(io.BytesIO(conteudo)) as zip_file:
                 json_filename = zip_file.namelist()[0]
                 with zip_file.open(json_filename) as json_file:
                     dados_importados = json.load(json_file)
         else:
-            # Arquivo JSON direto
-            dados_importados = json.load(arquivo)
+            dados_importados = json.loads(conteudo.decode('utf-8'))
         
-        # Valida estrutura
         if 'tarefas' not in dados_importados:
             return JSONResponse(
                 status_code=400,
-                content={"error": f"Formato de dados invalido"}
+                content={"error": "Formato de dados inválido"}
             )
         
         user = request.session.get("username")
         tarefas_importadas = 0
         
-        # Importa as tarefas
         for tarefa_data in dados_importados['tarefas']:
             tarefa_existente = db.query(Tarefas).filter(
                 Tarefas.user   == user,
                 Tarefas.titulo == tarefa_data.get('titulo'),
-                Tarefas.data   == tarefa_data.get('data')
+                Tarefas.data   == tarefa_data.get('data'),
+                Tarefas.time   == tarefa_data.get('time')
             ).first()
             
+            time_value = None
+            if tarefa_data.get('time'):
+                time_str = tarefa_data.get('time')
+            if '.' in time_str:
+                time_str = time_str.split('.')[0]
+            time_value = datetime.strptime(time_str, "%H:%M:%S").time()
+
             if not tarefa_existente:
                 nova_tarefa = Tarefas(
                     user=user,
                     titulo=tarefa_data.get('titulo'),
                     descricao=tarefa_data.get('descricao'),
                     data=datetime.fromisoformat(tarefa_data.get('data')) if tarefa_data.get('data') else None,
+                    time=time_value,
                     prioridade=tarefa_data.get('prioridade', 'Média'),
                     categoria=tarefa_data.get('categoria', 'Outros'),
-                    status=tarefa_data.get('status', False)
+                    concluido=tarefa_data.get('concluido', False)
                 )
                 db.add(nova_tarefa)
                 tarefas_importadas += 1
@@ -414,7 +421,7 @@ def importar_dados(request: Request, db: Session = Depends(get_db)):
     except Exception as e:
         db.rollback()
         return JSONResponse(
-            status_code=400,
+            status_code=500,
             content={"error": f'Erro ao importar dados: {str(e)}'}
         )
 
@@ -431,7 +438,7 @@ def tarefas_lista(request: Request, db: Session = Depends(get_db)):
         })
 
 @app.get("/home/adicionar_tarefa")
-def tarefas_lista(request: Request, db: Session = Depends(get_db)):
+def tarefas_criar(request: Request, db: Session = Depends(get_db)):
     user = request.session.get("username")
     tarefas = db.query(Tarefas).filter_by(user=user).all()
     return templates.TemplateResponse("tarefas_criar.html", {
@@ -455,6 +462,7 @@ def tarefa_view(request: Request, tarefa_id: int, db: Session = Depends(get_db))
         })
     else:
         raise HTTPException(status_code=404, detail="Tarefa não encontrada")
+
 
 
 # Tela Perfil
@@ -528,6 +536,8 @@ def adicionar_tarefa(
 ):
     user = request.session.get("username")
 
+    time = datetime.now()
+    time_obj = datetime.time(time)
     data_obj = None
     if data:
         data_obj = datetime.strptime(data, "%Y-%m-%d").date()
@@ -537,6 +547,7 @@ def adicionar_tarefa(
         titulo=titulo,
         descricao=descricao,
         data=data_obj,
+        time = time_obj,
         concluido=False,
         prioridade=prioridade,
         categoria=categoria

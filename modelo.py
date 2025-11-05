@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, Enum, Date
+from sqlalchemy import Column, Integer, String, Boolean, Enum, Date, Time
 from banco import Base
 import enum
 
@@ -21,6 +21,7 @@ class Tarefas(Base):
     titulo     = Column(String(100), nullable=False)
     descricao  = Column(String(300), nullable=False)
     data       = Column(Date, nullable=False)
+    time       = Column(Time, nullable=False)
     concluido  = Column(Boolean, default=False)
     prioridade = Column(Enum(PrioridadeTarefaEnum), nullable=False)
     categoria  = Column(Enum(CategoriaTarefaEnum), nullable=False)
