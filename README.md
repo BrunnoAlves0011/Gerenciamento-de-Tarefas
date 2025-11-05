@@ -113,12 +113,7 @@ gerenciador-tarefas/
 - **Editar**: Clique no ✏️ para modificar
 - **Excluir**: Clique no 🗑️ para remover
 
-### 4. Filtrar e Buscar
-- Use a barra de busca para encontrar tarefas
-- Filtre por status, prioridade ou categoria
-- Combine múltiplos filtros
-
-### 5. Acompanhar Progresso
+### 4. Acompanhar Progresso
 - Visualize estatísticas no dashboard
 - Veja barras de progresso por projeto
 - Acompanhe suas conquistas no perfil
@@ -152,7 +147,7 @@ Contribuições são bem-vindas! Para contribuir:
 4. Push para a branch (`git push origin feature/MinhaFeature`)
 5. Abra um Pull Request
 
-## 📝 Roadmap
+<!-- ## 📝 Roadmap
 
 - [ ] Notificações por email
 - [ ] Tarefas recorrentes
@@ -161,11 +156,11 @@ Contribuições são bem-vindas! Para contribuir:
 - [ ] Integração com calendário
 - [ ] Modo escuro
 - [ ] Exportar tarefas (PDF/CSV)
-- [ ] API pública com documentação
+- [ ] API pública com documentação -->
 
 ## 🐛 Reportar Bugs
 
-Encontrou um bug? Por favor, abra uma [issue](https://github.com/seu-usuario/gerenciador-tarefas/issues) com:
+Encontrou um bug? Por favor, abra uma [issue](https://github.com/BrunnoAlves0011/Gerenciamento-de-Tarefas/issues) com:
 - Descrição detalhada do problema
 - Passos para reproduzir
 - Comportamento esperado vs atual
